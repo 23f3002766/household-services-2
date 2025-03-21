@@ -17,7 +17,6 @@ export default {
         </router-link>
       </div>
     
-    
       <!-- "Looking For?" Header -->
       <div class="center mb-4">
         <h1>Looking For?</h1> 
