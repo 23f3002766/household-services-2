@@ -1,7 +1,7 @@
 from flask import Flask
 from backend.config import LocalDevelopmentConfig
 from flask_security import SQLAlchemyUserDatastore,Security
-from backend.models import db, User, Role
+from backend.models import db, User, Role , Customer
 
 
 def createApp():
@@ -15,8 +15,11 @@ def createApp():
     
     app.security = Security(app, datastore=datastore, register_blueprint=False)
 
-  
     app.app_context().push()
+
+    from backend.resources import api
+    # flask-restful init
+    api.init_app(app)
 
     return app
 
@@ -25,6 +28,7 @@ app = createApp()
 import backend.init_initial_data
 
 import backend.routes
+
 
 if (__name__ == '__main__'):
    
