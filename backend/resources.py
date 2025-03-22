@@ -2,6 +2,7 @@ from flask import jsonify, request, redirect, url_for, current_app as app
 from flask_restful import Api, Resource, fields, marshal_with
 from flask_security import auth_required
 from backend.models import db, User, Customer, Professional, Service, ServiceRequest
+from datetime import datetime
 
 # Initialize the API
 api = Api(prefix='/api')
@@ -197,6 +198,97 @@ class CustomerUpdateProfile(Resource):
         db.session.commit()
         
         return customer.to_dict(), 200
+    
+
+# -----------------------------------------------------------------------------
+# Customer Service Request Resources
+# -----------------------------------------------------------------------------
+
+
+class CustomerBookings(Resource):
+    @auth_required("token")
+    def get(self, customer_id):
+        bookings = ServiceRequest.query.filter_by(customer_id=customer_id).all()
+        return jsonify([b.to_dict() for b in bookings])
+
+    @auth_required("token")
+    def post(self, customer_id):
+        data = request.get_json()
+        service_id = data.get("service_id")
+        professional_id = data.get("professional_id")
+
+        if not service_id:
+            return {"error": "Service ID is required."}, 400
+
+        new_booking = ServiceRequest(
+            customer_id=customer_id,
+            service_id=service_id,
+            professional_id=professional_id,
+        )
+
+        db.session.add(new_booking)
+        db.session.commit()
+
+        return new_booking.to_dict(), 201
+
+    @auth_required("token")
+    def put(self, customer_id, booking_id):
+        booking = ServiceRequest.query.get(booking_id)
+        if not booking or booking.customer_id != customer_id:
+            return {"error": "Booking not found."}, 404
+
+        data = request.get_json()
+        print("Received Data:", data)  # Debugging
+
+        # Parse date_of_request if provided
+        if "date_of_request" in data and data["date_of_request"]:
+            try:
+                booking.date_of_request = datetime.strptime(data["date_of_request"], "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                return {"error": "Invalid date format. Use YYYY-MM-DD HH:MM:SS"}, 400
+
+        db.session.commit()
+        print("Updated Successfully")
+    
+        return booking.to_dict(), 200
+
+
+class CloseServiceRequest(Resource):
+    @auth_required("token")
+    def put(self, service_request_id):
+      
+        # Fetch the service request
+        service_request = ServiceRequest.query.get(service_request_id)
+
+        if not service_request:
+            return {"error": "Service request not found."}, 404
+        
+        # Update the service status to "closed"
+        service_request.service_status = "closed"
+        service_request.date_of_completion = datetime.utcnow()  # Set completion date
+        db.session.commit()
+
+        return {"message": "Service request closed successfully", "service_request": service_request.to_dict()}, 200
+    
+class ReviewServiceRequest(Resource):
+    @auth_required("token")
+    def put(self, service_request_id):
+      
+        # Fetch the service request
+        service_request = ServiceRequest.query.get(service_request_id)
+
+        if not service_request:
+            return {"error": "Service request not found."}, 404
+        
+        data = request.get_json()
+        print("Received Data:", data)
+        
+        # Update the service status to "closed"
+        service_request.remarks = data["review"]
+        db.session.commit()
+
+        return {"message": "Review added successfully", "service_request": service_request.to_dict()}, 200
+
 
 # -----------------------------------------------------------------------------
 # Register Resources with the API
@@ -212,4 +304,7 @@ api.add_resource(AdminBlockUser, "/admin/block/<int:user_id>")
 #Customer Resources
 api.add_resource(CustomerDashboard, "/customer/dashboard/<int:customer_id>", endpoint="dashboard")
 api.add_resource(CustomerUpdateProfile, "/customer/profile/<int:customer_id>")
-
+#service request Resources
+api.add_resource(CustomerBookings, "/customer/bookings/<int:customer_id>", "/customer/bookings/<int:customer_id>/<int:booking_id>")
+api.add_resource(CloseServiceRequest, "/customer/close-request/<int:service_request_id>")
+api.add_resource(ReviewServiceRequest, "/customer/review-request/<int:service_request_id>")

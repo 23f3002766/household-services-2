@@ -152,7 +152,7 @@ class ServiceRequest(db.Model):
     professional_id = db.Column(db.Integer, db.ForeignKey('professional.id'), nullable=True)
     date_of_request = db.Column(db.DateTime, default=datetime.now())
     date_of_completion = db.Column(db.DateTime, nullable=True)
-    service_status = db.Column(db.String(20), default='requested')  # requested/assigned/closed
+    service_status = db.Column(db.String(20), default='requested')  # requested/accepted/closed
     remarks = db.Column(db.Text, nullable=True)
 
     def to_dict(self):

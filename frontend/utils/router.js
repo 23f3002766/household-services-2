@@ -9,6 +9,7 @@ import EditServicePage from "../pages/EditServicePage.js";
 
 import store from './store.js'
 import EditProfile from "../pages/EditProfile.js";
+import BookingsPage from "../pages/BookingsPage.js";
 
 
 const Home = {
@@ -36,7 +37,7 @@ const routes = [
         },
         {
             path: '',
-            // Optionally, you can have a default child that renders nothing
+            //default child that renders nothing
             components: {
               create: { template: '<div></div>' },
               edit: { template: '<div></div>' }
@@ -49,9 +50,24 @@ const routes = [
         {
             path: "editprofile/:id",
             name: 'EditProfile',
-            component: EditProfile,
+            components: {editprofile: EditProfile},
+            props: {editprofile : true},
             meta: { requiresLogin: true, role: "customer" }
-        }
+        },
+        {
+            path: "booking/:name/:cid/:sid",
+            components : {create : BookingsPage},
+            props: {create : true},
+            meta: { requiresLogin: true, role: "customer" }
+        },
+        {
+            path: '',
+            // default child that renders nothing
+            components: {
+              create: { template: '<div></div>' },
+              editprofile: { template: '<div></div>' }
+            }  
+        },
     ]}
 ]
 
