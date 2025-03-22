@@ -10,7 +10,7 @@ export default {
           return [];
         }
         return this.professionals.filter(professional => {
-          return professional.service_id == this.$route.params.sid;
+          return professional.service_id == this.$route.params.sid && professional.approved;
         });
       }
     },

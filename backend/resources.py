@@ -1,6 +1,6 @@
 from flask import jsonify, request, redirect, url_for, current_app as app
-from flask_restful import Api, Resource, fields, marshal_with
-from flask_security import auth_required
+from flask_restful import Api, Resource, fields, marshal_with,reqparse
+from flask_security import auth_required,roles_required,current_user
 from backend.models import db, User, Customer, Professional, Service, ServiceRequest
 from datetime import datetime
 
@@ -21,6 +21,7 @@ service_fields = {
 # -----------------------------------------------------------------------------
 class AdminDashboard(Resource):
     @auth_required("token")
+    @roles_required("admin")
     def get(self):
  
         customers = Customer.query.all()
@@ -46,6 +47,7 @@ class AdminDashboard(Resource):
 # -----------------------------------------------------------------------------
 class AdminCreateService(Resource):
     @auth_required("token")
+    @roles_required("admin")
     @marshal_with(service_fields)
     def post(self):
         data = request.get_json()
@@ -70,6 +72,7 @@ class AdminCreateService(Resource):
 # -----------------------------------------------------------------------------
 class AdminUpdateService(Resource):
     @auth_required("token")
+    @roles_required("admin")
     @marshal_with(service_fields)
     def put(self, service_id):
 
@@ -105,6 +108,7 @@ class AdminUpdateService(Resource):
 # -----------------------------------------------------------------------------
 class AdminDeleteService(Resource):
     @auth_required("token")
+    @roles_required("admin")
     def delete(self, service_id):
         service = Service.query.get(service_id)
 
@@ -122,6 +126,7 @@ class AdminDeleteService(Resource):
 # -----------------------------------------------------------------------------
 class AdminApproveProfessional(Resource):
     @auth_required("token")
+    @roles_required("admin")
     def post(self, professional_id):
         professional = Professional.query.get(professional_id)
         print(professional)
@@ -138,6 +143,7 @@ class AdminApproveProfessional(Resource):
 # -----------------------------------------------------------------------------
 class AdminBlockUser(Resource):
     @auth_required("token")
+    @roles_required("admin")
     def post(self, user_id):
 
         user = User.query.get(user_id)
@@ -154,6 +160,7 @@ class AdminBlockUser(Resource):
 # -----------------------------------------------------------------------------
 class CustomerDashboard(Resource):
     @auth_required("token")
+    @roles_required("customer")
     def get(self , customer_id):
         professionals = Professional.query.all()
         services = Service.query.all()
@@ -178,6 +185,7 @@ class CustomerDashboard(Resource):
 
 class CustomerUpdateProfile(Resource):
     @auth_required("token")
+    @roles_required("customer")
     def get(self, customer_id):
         customer = Customer.query.get(customer_id)
         if not customer:
@@ -187,6 +195,7 @@ class CustomerUpdateProfile(Resource):
         return customer.to_dict(), 200
 
     @auth_required("token")
+    @roles_required("customer")
     def put(self, customer_id):
 
         data = request.get_json()
@@ -225,11 +234,13 @@ class CustomerUpdateProfile(Resource):
 
 class CustomerBookings(Resource):
     @auth_required("token")
+    @roles_required("customer")
     def get(self, customer_id):
         bookings = ServiceRequest.query.filter_by(customer_id=customer_id).all()
         return jsonify([b.to_dict() for b in bookings])
 
     @auth_required("token")
+    @roles_required("customer")
     def post(self, customer_id):
         data = request.get_json()
         service_id = data.get("service_id")
@@ -258,6 +269,7 @@ class CustomerBookings(Resource):
         return new_booking.to_dict(), 201
 
     @auth_required("token")
+    @roles_required("customer")
     def put(self, customer_id, booking_id):
         booking = ServiceRequest.query.get(booking_id)
         if not booking or booking.customer_id != customer_id:
@@ -281,6 +293,7 @@ class CustomerBookings(Resource):
 
 class CloseServiceRequest(Resource):
     @auth_required("token")
+    @roles_required("customer")
     def put(self, service_request_id):
       
         # Fetch the service request
@@ -298,6 +311,7 @@ class CloseServiceRequest(Resource):
     
 class ReviewServiceRequest(Resource):
     @auth_required("token")
+    @roles_required("customer")
     def put(self, service_request_id):
       
         # Fetch the service request
@@ -314,6 +328,72 @@ class ReviewServiceRequest(Resource):
         db.session.commit()
 
         return {"message": "Review added successfully", "service_request": service_request.to_dict()}, 200
+
+# -----------------------------------------------------------------------------
+# Professional Dashboard Resource
+# -----------------------------------------------------------------------------    
+
+class ProfessionalServiceRequestsAPI(Resource):
+    @auth_required("token")
+    @roles_required("professional")
+    def get(self):
+  
+        requests = ServiceRequest.query.filter_by(professional_id=current_user.id).all()
+
+        result = []
+        for req in requests:
+            customer = Customer.query.get(req.customer_id)
+            service = Service.query.get(req.service_id)
+
+            request_data = req.to_dict()
+            request_data["customer"] = customer.to_dict() if customer else None
+            request_data["service"] = service.to_dict() if service else None
+            
+            result.append(request_data)
+        
+        return jsonify(result)
+
+class AcceptRejectServiceRequestAPI(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument("action", type=str, required=True, choices=("accept", "reject"), help="Choose either 'accept' or 'reject'.")
+
+    @auth_required("token")
+    @roles_required("professional")
+    def put(self, request_id):
+        print("hello")
+        args = self.parser.parse_args()
+        print(args, request_id)
+        service_request = ServiceRequest.query.get(request_id)
+
+        if not service_request:
+            return {"message": "Service request not found"}, 404
+
+        if args["action"] == "accept":
+            service_request.service_status = "accepted"
+        else:
+            service_request.service_status = "rejected"
+
+        db.session.commit()
+        return {"message": f"Service request {args['action']}ed successfully"}
+
+class CloseServiceRequestAPI(Resource):
+    @auth_required("token")
+    @roles_required("professional")
+    def put(self, request_id):
+       
+        service_request = ServiceRequest.query.get(request_id)
+
+        if not service_request:
+            return {"message": "Service request not found"}, 404
+
+        if service_request.professional_id != current_user.id:
+            return {"message": "You are not assigned to this request"}, 403
+
+        service_request.service_status = "closed"
+        service_request.date_of_completion = datetime.utcnow()
+        db.session.commit()
+        return {"message": "Service request closed successfully"}
+
 
 
 # -----------------------------------------------------------------------------
@@ -336,3 +416,9 @@ api.add_resource(CustomerUpdateProfile, "/customer/profile/<int:customer_id>")
 api.add_resource(CustomerBookings, "/customer/bookings/<int:customer_id>", "/customer/bookings/<int:customer_id>/<int:booking_id>")
 api.add_resource(CloseServiceRequest, "/customer/close-request/<int:service_request_id>")
 api.add_resource(ReviewServiceRequest, "/customer/review-request/<int:service_request_id>")
+
+#Professional Resources
+
+api.add_resource(ProfessionalServiceRequestsAPI, "/professional/service-requests")
+api.add_resource(AcceptRejectServiceRequestAPI, "/service-requests/<int:request_id>/action")
+api.add_resource(CloseServiceRequestAPI, "/service-requests/<int:request_id>/close")

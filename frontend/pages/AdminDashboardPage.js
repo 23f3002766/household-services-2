@@ -7,9 +7,6 @@ export default {
     <div class="container mt-4">
       <h1>Admin Dashboard</h1>
        
-
-
-
       <div v-if="isChildRouteActive">
         <!-- This container shows the child component if one is active -->
         <div v-if="childActive" class="container mt-3 bg-light p-3 rounded shadow-sm">
