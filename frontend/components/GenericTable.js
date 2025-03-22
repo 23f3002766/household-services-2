@@ -10,7 +10,7 @@ export default {
           </thead>
           <tbody>
             <tr v-for="(row, rowIndex) in data" :key="rowIndex">
-              <td v-for="col in columns" :key="col.key" class="text-truncate" style="max-width: 350px; white-space: nowrap; overflow: hidden;" >
+              <td v-for="col in columns" :key="col.key" class="text-truncate" style="max-width: 350px; white-space: nowrap; " >
                 <!-- If a slot with the column key exists, render that slot. Otherwise, show the property -->
                 <slot :name="col.key" :row="row">
                   {{ row[col.key] }}

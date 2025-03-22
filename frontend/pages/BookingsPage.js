@@ -4,6 +4,13 @@ export default {
       services: Array,
       professionals: Array
     },
+    computed: {
+      filteredProfessionals() {
+        return this.professionals.filter(professional => {
+          return professional.service_id == this.$route.params.sid;
+      });
+      }
+    },
     template: `
       <div class="my-container">
         <div class="center">
@@ -18,7 +25,7 @@ export default {
               <div class="form-group">
                 <label for="professional" class="form-label">Select professional</label>
                 <select v-model="professional_id" class="form-control">
-                  <option v-for="professional in professionals" :key="professional.id" :value="professional.id">
+                  <option v-for="professional in filteredProfessionals" :key="professional.id" :value="professional.id">
                     {{ professional.name }}
                   </option>
                 </select>
@@ -48,6 +55,20 @@ export default {
           alert("Please fill all fields.");
           return;
         }
+
+        if (!this.date_of_request) {
+          alert("Invalid date selected.");
+          return;
+      }
+
+      const dateObject = new Date(this.date_of_request);
+      if (isNaN(dateObject.getTime())) {
+          alert("Invalid date format.");
+          return;
+      }
+        // Ensure date is formatted as "YYYY-MM-DD HH:MM:SS"
+        const formatedDate = dateObject.toISOString().slice(0, 19).replace("T", " ");
+        console.log(formatedDate)
         
         const res = await fetch(location.origin + '/api/customer/bookings/' + this.$route.params.cid, {
           method: 'POST',
@@ -59,7 +80,7 @@ export default {
             customer_id: this.$route.params.cid,
             professional_id: this.professional_id,
             service_id: this.$route.params.sid,
-            date_of_request: this.date_of_request
+            date_of_request: formatedDate
           })
         });
         
@@ -67,6 +88,7 @@ export default {
           const data = await res.json()
           console.log(data)
           alert('Service request submitted successfully!');
+          this.$emit('request-created');
           this.$router.push('/dashboard');
         } else {
           alert('Failed to submit request. Try again.');

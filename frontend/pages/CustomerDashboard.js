@@ -8,7 +8,7 @@ export default {
     <div v-if="isChildRouteActive">
       <div v-if="childActive" class="container mt-3 bg-light p-3 rounded shadow-sm">
         <router-view name="editprofile" :customer="customer"  @profile-updated="updateProfile" ></router-view>
-        <router-view v-if="customer && services.length && professionals.length" name="create" :customer="customer" :professionals="professionals" :services="services"></router-view>
+        <router-view v-if="customer && services.length && professionals.length" name="create" @request-created="fetchDashboardData" :customer="customer" :professionals="professionals" :services="services"></router-view>
         <h1 v-else>No Professionals Yet</h1>
        </div>
     </div>
@@ -146,7 +146,6 @@ export default {
         { label: "Service Name", key: "service_name" },
         { label: "Professional Name", key: "prof_name" },
         { label: "Phone", key: "phone" },
-        { label: "Date", key: "date_of_request" },
         { label: "Status", key: "service_status" },
         { label: "Edit Req Date", key: "action" } 
       ],
@@ -156,7 +155,6 @@ export default {
         { label: "Professional Name", key: "prof_name" },
         { label: "Phone", key: "phone" },
         { label: "Date", key: "date_of_completion" },
-        { label: "Rating", key: "remarks" },
         { label: "Review", key: "action" }
       ]
     };

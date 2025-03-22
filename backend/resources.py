@@ -216,6 +216,13 @@ class CustomerBookings(Resource):
         data = request.get_json()
         service_id = data.get("service_id")
         professional_id = data.get("professional_id")
+        date_of_request = data.get("date_of_request")
+
+        if "date_of_request" in data and data["date_of_request"]:
+            try:
+                date_of_request = datetime.strptime(data["date_of_request"], "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                return {"error": "Invalid date format. Use YYYY-MM-DD HH:MM:SS"}, 400
 
         if not service_id:
             return {"error": "Service ID is required."}, 400
@@ -224,6 +231,7 @@ class CustomerBookings(Resource):
             customer_id=customer_id,
             service_id=service_id,
             professional_id=professional_id,
+            date_of_request=date_of_request
         )
 
         db.session.add(new_booking)
