@@ -8,8 +8,8 @@ export default {
     <div v-if="isChildRouteActive">
       <div v-if="childActive" class="container mt-3 bg-light p-3 rounded shadow-sm">
         <router-view name="editprofile" :customer="customer"  @profile-updated="updateProfile" ></router-view>
-        <router-view v-if="customer && services.length && professionals.length" name="create" @request-created="fetchDashboardData" :customer="customer" :professionals="professionals" :services="services"></router-view>
-        <h1 v-else>No Professionals Yet</h1>
+        <router-view name="create" @request-created="fetchDashboardData" :customer="customer" :professionals="professionals" :services="services"></router-view>
+       
        </div>
     </div>
     <div v-else class="container mt-4">
@@ -256,7 +256,7 @@ export default {
           this.services = data["services"];
           this.service_reqs = data["service_reqs"];
           this.professionals = data["professionals"];
-  
+          console.log(this.professionals)
         })
         .catch(err => console.error("Error fetching customer dashboard data:", err));
     },//Profile Methods

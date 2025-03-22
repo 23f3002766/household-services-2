@@ -23,7 +23,7 @@ export default {
       
       <!-- Otherwise, show the dashboard content -->
       <div v-else>
-        <div class="container mt-3 bg-light p-3 rounded shadow-sm">
+        <div class="container mt-3 mb-2 bg-light p-3 rounded shadow-sm">
           <router-link class="navbar-brand fw-bold" to="/admin-dashboard/create-service">
             Create New Service
           </router-link>
@@ -39,6 +39,7 @@ export default {
             :to="'/admin-dashboard/editservice/' + row.id">
               Edit
             </router-link>
+            <button class="btn btn-danger btn-sm" @click="deleteService(row.id)">Delete</button>
           </template>
         </GenericTable>
         
@@ -75,7 +76,11 @@ export default {
         
         <!-- Service Requests Section -->
         <h3>Service Requests</h3>
-        <GenericTable :columns="requestColumns" :data="serviceRequests"></GenericTable> 
+        <GenericTable :columns="requestColumns" :data="serviceRequests"> 
+         <template v-slot:action="{ row }">
+            <button class="btn btn-danger btn-sm" >Delete</button>
+          </template>
+        </GenericTable>
       </div>
     </div>
 
@@ -92,14 +97,13 @@ export default {
           { label: "Service Name", key: "name" },
           { label: "Time Required", key: "time_required" },
           { label: "Base Price", key: "price" },
-          { label: "Action", key: "action" }
+          { label: "Actions", key: "action" }
         ],
         professionalColumns: [
           { label: "ID", key: "id" },
           { label: "Name", key: "name" },
-          { label: "Experience (yrs)", key: "experience" },
-          { label: "Service Name", key: "service_type" },
-          { label: "Docs", key: "docs" },
+          { label: "Service ID", key: "service_id" },
+          { label: "Pincode", key: "pincode" },
           { label: "Action", key: "action" }
         ],
         customerColumns: [
@@ -111,9 +115,9 @@ export default {
         ],
         requestColumns: [
           { label: "ID", key: "id" },
-          { label: "Assigned Professional", key: "professional_name" },
           { label: "Req Date", key: "date_of_request" },
-          { label: "Status", key: "service_status" }
+          { label: "Status", key: "service_status" },
+          { label: "Review", key: "remarks" },
         ]
       };
     },
@@ -149,7 +153,9 @@ export default {
             this.professionals = data["professionals"]; 
             this.customers = data['customers']; 
             this.serviceRequests = data['service_reqs']; 
-            this.services = data["services"];})
+            this.services = data["services"];
+           console.log(this.serviceRequests)
+          })
           .catch(error => console.error("Error fetching professionals:", error));
       },
       approveProfessional: function(profId) {
@@ -185,6 +191,16 @@ export default {
           })
           .catch(error => console.error("Error blocking customer:", error));
       },
+      deleteService: function(serviceId) {
+        fetch(location.origin + '/api/admin/delete-service/' + serviceId, { method: 'DELETE', headers : { 'Authentication-Token' : this.$store.state.auth_token} })
+          .then(response => {
+            if(response.ok){
+              this.services = this.services.filter(service => service.id !== serviceId);
+              console.log("Service Deleted Successfully")
+            }
+          })
+          .catch(error => console.error("Error deleting service :", error));
+      },
       viewPDFUrl: function(professionalId) {
        //Do it later
         return window.apiHelper.viewPDFUrl(professionalId);
@@ -205,7 +221,5 @@ export default {
     }
   };
 
-  //<template v-slot:docs="{ row }"> --!>
-  //   <a :href="viewPDFUrl(row.id)" target="_blank">View PDF</a> 
-  // </template> --!>
+
   

@@ -23,8 +23,7 @@ def register():
     phone = data.get('phone')
     pincode = data.get('pincode')
     service_id = data.get('service_id')
-    exp = data.get('exp')
-    pdf_path = data.get('pdf_path')
+    exp = data.get('experience')
     
     if not email or not password or role_name not in ['professional', 'customer']:
         return jsonify({"message": "Invalid inputs"}), 400
@@ -77,7 +76,6 @@ def register():
                 pincode = pincode,
                 service_id= service_id,
                 experience=exp,
-                pdf_path=pdf_path,
                 active=True
             )
             db.session.add(professional)

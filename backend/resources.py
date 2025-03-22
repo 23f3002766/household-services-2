@@ -99,6 +99,24 @@ class AdminUpdateService(Resource):
         
         return service, 200
 
+
+# -----------------------------------------------------------------------------
+# Admin Delete Service Resource
+# -----------------------------------------------------------------------------
+class AdminDeleteService(Resource):
+    @auth_required("token")
+    def delete(self, service_id):
+        service = Service.query.get(service_id)
+
+        if not service:
+            return {"error": "Service not found."}, 404
+
+        db.session.delete(service)
+        db.session.commit()
+
+        return {"message": "Service deleted successfully."}, 200
+
+
 # -----------------------------------------------------------------------------
 # Admin Approve Professional Resource
 # -----------------------------------------------------------------------------
@@ -308,6 +326,8 @@ api.add_resource(AdminCreateService, "/admin/service")
 api.add_resource(AdminUpdateService, "/admin/update-service/<int:service_id>")
 api.add_resource(AdminApproveProfessional, "/admin/approve/<int:professional_id>")
 api.add_resource(AdminBlockUser, "/admin/block/<int:user_id>")
+api.add_resource(AdminDeleteService, "/admin/delete-service/<int:service_id>")
+
 
 #Customer Resources
 api.add_resource(CustomerDashboard, "/customer/dashboard/<int:customer_id>", endpoint="dashboard")

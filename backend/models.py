@@ -75,7 +75,6 @@ class Professional(User):
     address = db.Column(db.String(240), nullable=True)
     phone = db.Column(db.String(10), nullable=True)
     pincode = db.Column(db.Integer, nullable=True)
-    pdf_path = db.Column(db.String(300), nullable=True)
     approved = db.Column(db.Boolean, default = False)
      # Relationship for requests a user has accepted
     accepted_requests = db.relationship(
@@ -100,7 +99,6 @@ class Professional(User):
             "address": self.address,
             "phone": self.phone,
             "pincode": self.pincode,
-            "pdf_path": self.pdf_path,
             "approved": self.approved,
         }
 

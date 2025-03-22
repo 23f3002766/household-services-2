@@ -6,9 +6,12 @@ export default {
     },
     computed: {
       filteredProfessionals() {
+        if (!this.professionals || this.professionals.length === 0) {
+          return [];
+        }
         return this.professionals.filter(professional => {
           return professional.service_id == this.$route.params.sid;
-      });
+        });
       }
     },
     template: `
@@ -18,7 +21,7 @@ export default {
         </div>
         <div class="my-panel">
           <div class="center">
-            <h3>New {{services[(this.$route.params.sid - 1)]["name"]}} Service Request </h3>
+            <h3>New  Service Request </h3>
           </div>
           <form @submit.prevent="createRequest">
             <div class="input-form">
@@ -87,7 +90,7 @@ export default {
         if (res.ok) {
           const data = await res.json()
           console.log(data)
-          alert('Service request submitted successfully!');
+          console.log('Service request submitted successfully!');
           this.$emit('request-created');
           this.$router.push('/dashboard');
         } else {

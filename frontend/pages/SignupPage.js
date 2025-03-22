@@ -25,9 +25,6 @@ export default {
                     <input type="text" class="form-control" v-model="experience" />
                 </div>
                 <div class="mb-3">
-                    <input type="file" accept=".pdf" @change="handleFileUpload" />
-                </div>
-                <div class="mb-3">
                     <label class="form-label">Phone</label>
                     <input type="text" class="form-control" v-model="phone" />
                 </div>
@@ -60,11 +57,7 @@ export default {
             phone: '',
             pincode: '',
             experience: '',
-            vdoc: null,
-            services: [
-                { id: 1, name: "Plumbing" },
-                { id: 2, name: "Electrician" },
-                { id: 3, name: "Cleaning" } ],  
+            services: [],  
             selectedService: null,
             errorMessage: '',
         };
@@ -74,10 +67,7 @@ export default {
             try {
                 const res = await fetch(location.origin + "/services");
                 if (res.ok) {
-                    this.services = await res.json() | [
-                        { id: 1, name: "Plumbing" },
-                        { id: 2, name: "Electrician" },
-                        { id: 3, name: "Cleaning" } ];
+                    this.services = await res.json() ;
                 }
             } catch (error) {
                 console.error("Error fetching services:", error);
@@ -92,8 +82,8 @@ export default {
                 this.errorMessage = "All fields are required!";
                 return;
             }
-
             try {
+                console.log(this.selectedService)
                 const res = await fetch(location.origin + "/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -106,11 +96,9 @@ export default {
                         phone: this.phone,
                         pincode: this.pincode,
                         experience: this.experience,
-                        pdf_path: this.vdoc ,
-                        service_id: "1"
+                        service_id: this.selectedService
                     })
                 });
-
                 if (res.ok) {
                     console.log("User registered successfully");
                     const data = await res.json();
