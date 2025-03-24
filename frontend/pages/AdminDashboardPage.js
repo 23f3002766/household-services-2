@@ -6,7 +6,9 @@ export default {
     template: `
     <div class="container mt-4">
       <h1>Admin Dashboard</h1>
-       
+      <!-- Trigger create Service Req CSV -->
+      <button class="btn btn-danger btn-sm" @click="create_csv"> Get Data </button>
+      
       <div v-if="isChildRouteActive">
         <!-- This container shows the child component if one is active -->
         <div v-if="childActive" class="container mt-3 bg-light p-3 rounded shadow-sm">
@@ -211,7 +213,26 @@ export default {
           sid = parseInt(sid) - 1
           console.log(sid)
           this.$set(this.services,sid, updatedService);
-      }
+      },
+      //Async job method
+      async create_csv(){
+        const res = await fetch(location.origin + '/create-csv', {
+            headers : {
+                'Authentication-Token' : this.$store.state.auth_token 
+            }
+        })
+        const task_id = (await res.json()).task_id
+
+        const interval = setInterval(async() => {
+            const res = await fetch(`${location.origin}/get-csv/${task_id}` )
+            if (res.ok){
+                console.log('data is ready')
+                window.open(`${location.origin}/get-csv/${task_id}`)
+                clearInterval(interval)
+            }
+
+        }, 100)
+        },
     },
     created: function() {
       this.fetchInitData();
