@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Customer Summary Report</title>
+</head>
+<body>
+    <h1>Customer Summary Report</h1>
+    <p>Total Requests: {{ total_requests }}</p>
+    <p>Pending Requests: {{ pending_requests }}</p>
+    <p>Completed Requests: {{ completed_requests }}</p>
+
+    <h2>Services Requested</h2>
+    <img src="{{ chart_url }}" alt="Service Distribution Chart" />
+
+    <footer>
+        <p>&copy; 2024 A to Z Household Services. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

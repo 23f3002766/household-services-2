@@ -4,6 +4,8 @@ import flask_excel
 from backend.models import ServiceRequest
 from backend.celery.mail_service import send_email
 
+import urllib.request
+
 @shared_task(ignore_result = False)
 def add(x,y):
     time.sleep(10)
@@ -27,4 +29,25 @@ def create_csv(self):
 
 @shared_task(ignore_result = True)
 def email_reminder(to, subject, content):
+    send_email(to, subject, content)
+
+@shared_task(ignore_result = True)
+def email_professional_report(to, subject, id):
+    url = "http://127.0.0.1:5000/professional/summary/" + id
+    with urllib.request.urlopen(url) as response:
+        content = response.read().decode()
+    send_email(to, subject, content) 
+
+@shared_task(ignore_result = True)
+def email_customer_report(to, subject, id):
+    url = "http://127.0.0.1:5000/customer/summary/" + id 
+    with urllib.request.urlopen(url) as response:
+        content = response.read().decode()
+    send_email(to, subject, content)
+
+@shared_task(ignore_result = True)
+def email_admin_report(to, subject):
+    url = "http://127.0.0.1:5000/admin/summary" 
+    with urllib.request.urlopen(url) as response:
+        content = response.read().decode()
     send_email(to, subject, content)

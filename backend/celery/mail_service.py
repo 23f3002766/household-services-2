@@ -2,12 +2,6 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
-#SMTP_SERVER = "localhost"
-#SMTP_PORT = 1025
-#SENDER_EMAIL = ''
-#SENDER_PASSWORD = ''
-
 MAIL_SERVER='smtp.gmail.com'
 MAIL_PORT=587
 MAIL_USE_TLS=True

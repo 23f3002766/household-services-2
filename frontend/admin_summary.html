@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Summary Report</title>
+</head>
+<body>
+    <h1>Admin Summary</h1>
+
+    <h2>Summary</h2>
+    <p>Total Professionals: {{ total_professionals }}</p>
+    <p>Total Customers: {{ total_customers }}</p>
+    <p>Total Requests: {{ total_requests }}</p>
+
+    <h2>Service Requests per Service</h2>
+    <img src="{{ chart_url }}" alt="Service Requests Chart" />
+    <footer>
+        <p>&copy; 2024 A to Z Household Services. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,11 +1,18 @@
 from flask import current_app as app, jsonify, render_template,  request, send_file
 from flask_security import auth_required, verify_password, hash_password,current_user
-from backend.models import db , Customer , Professional, User , Service
+from backend.models import db , Customer , Professional, User , Service,ServiceRequest
 from datetime import datetime
 import uuid 
 from backend.celery.tasks import add, create_csv
 from celery.result import AsyncResult
 import os 
+from werkzeug.utils import secure_filename
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import io
+import base64
+
 
 datastore = app.security.datastore
 cache = app.cache
@@ -156,8 +163,124 @@ def get_services():
     return jsonify([{"id": s.id, "name": s.name} for s in services])
 
 
+#Chart Routes
+@app.route('/admin/summary')
+def admin_summary():
+    # Data aggregation
+    service_counts = db.session.query(Service.name, db.func.count(ServiceRequest.id))\
+        .join(ServiceRequest, Service.id == ServiceRequest.service_id)\
+        .group_by(Service.name).all()
+    
+    services = [row[0] for row in service_counts]
+    counts = [row[1] for row in service_counts]
+
+    # Generate Matplotlib chart
+    plt.figure(figsize=(6, 4))
+    plt.bar(services, counts, color='skyblue')
+    plt.xlabel('Services')
+    plt.ylabel('Number of Requests')
+    plt.title('Service Requests per Service')
+    plt.xticks(rotation=45)
+
+    # Convert plot to a base64 string to embed in HTML
+    img = io.BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    img.seek(0)
+    chart_url = base64.b64encode(img.getvalue()).decode()
+    img.close()
+
+    return render_template(
+        'admin_summary.html',
+        chart_url=f"data:image/png;base64,{chart_url}",
+        total_professionals=Professional.query.count(),
+        total_customers=Customer.query.count(),
+        total_requests=ServiceRequest.query.count()
+    )
+
+
+#Professionals chart
+@app.route('/professional/summary/<int:professional_id>')
+def professional_summary(professional_id):
+    # Get the professional's details
+    professional = Professional.query.get(professional_id)
+
+    # Fetch service requests handled by this professional
+    service_requests = ServiceRequest.query.filter_by(professional_id=professional_id).all()
+
+    # Count requests by status
+    status_counts = db.session.query(
+        ServiceRequest.service_status, db.func.count(ServiceRequest.id)
+    ).filter_by(professional_id=professional_id).group_by(ServiceRequest.service_status).all()
+
+    statuses = [row[0] for row in status_counts]
+    counts = [row[1] for row in status_counts]
+
+    # Generate chart for service statuses
+    plt.figure(figsize=(6, 4))
+    plt.pie(counts, labels=statuses, autopct='%1.1f%%', startangle=140, colors=['lightblue', 'lightgreen', 'salmon'])
+    plt.title('Service Request Status Distribution')
+
+    img = io.BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    img.seek(0)
+    chart_url = base64.b64encode(img.getvalue()).decode()
+    img.close()
+
+    return render_template(
+        'professional_summary.html',
+        professional=professional,
+        chart_url=f"data:image/png;base64,{chart_url}",
+        total_requests=len(service_requests),
+        assigned_requests=len([req for req in service_requests if req.service_status == 'assigned']),
+        completed_requests=len([req for req in service_requests if req.service_status == 'closed'])
+    )
+
+#Customer Chart
+@app.route('/customer/summary/<int:customer_id>')
+def customer_summary(customer_id):
+    # Get the customer's details
+    customer = Customer.query.get(customer_id)
+
+    # Fetch service requests made by this customer
+    service_requests = ServiceRequest.query.filter_by(customer_id=customer_id).all()
+
+    # Count requests by service
+    service_counts = db.session.query(
+        Service.name, db.func.count(ServiceRequest.id)
+    ).join(Service, Service.id == ServiceRequest.service_id)\
+     .filter(ServiceRequest.customer_id == customer_id)\
+     .group_by(Service.name).all()
+
+    services = [row[0] for row in service_counts]
+    counts = [row[1] for row in service_counts]
+
+    # Generate chart for services requested
+    plt.figure(figsize=(6, 4))
+    plt.bar(services, counts, color='skyblue')
+    plt.xlabel('Services')
+    plt.ylabel('Number of Requests')
+    plt.title('Services Requested by Customer')
+    plt.xticks(rotation=45)
+
+    img = io.BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    img.seek(0)
+    chart_url = base64.b64encode(img.getvalue()).decode()
+    img.close()
+
+    return render_template(
+        'customer_summary.html',
+        customer=customer,
+        chart_url=f"data:image/png;base64,{chart_url}",
+        total_requests=len(service_requests),
+        pending_requests=len([req for req in service_requests if req.service_status == 'requested']),
+        completed_requests=len([req for req in service_requests if req.service_status == 'closed']),
+        id=customer_id
+    )
+
+
 @app.before_request
 def check_authentication():
-    if request.endpoint not in ['home', 'login', 'register', 'static', 'get_services']:
+    if request.endpoint not in ['home', 'login', 'register', 'static', 'get_services','admin_summary','customer_summary','professional_summary']:
         if not request.headers.get('Authentication-Token'):
             return jsonify({'error': 'Unauthorized'}), 401

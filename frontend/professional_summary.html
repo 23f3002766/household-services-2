@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Professional Summary Report</title>
+</head>
+<body>
+    <h1>Professional Summary Report</h1>
+    <p>Total Requests Handled: {{ total_requests }}</p>
+    <p>Assigned Requests: {{ assigned_requests }}</p>
+    <p>Completed Requests: {{ completed_requests }}</p>
+
+    <h2>Service Request Status Distribution</h2>
+    <img src="{{ chart_url }}" alt="Service Status Chart" />
+    <footer>
+        <p>&copy; 2024 A to Z Household Services. All rights reserved.</p>
+    </footer>
+</body>
+</html>
