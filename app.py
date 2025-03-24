@@ -11,6 +11,14 @@ def createApp():
     app = Flask(__name__, template_folder='frontend', static_folder='frontend', static_url_path='/static')
     app.config.from_object(LocalDevelopmentConfig)
     
+    app.config.update(
+        MAIL_SERVER='smtp@gmail.com',
+        MAIL_PORT=587,
+        MAIL_USE_TLS=True,
+        MAIL_USERNAME='thanos112357@gmail.com',
+        MAIL_PASSWORD='kgpp kjze mmsi pmwk',
+        MAIL_DEFAULT_SENDER='23f3002766@ds.study.iitm.ac.in'
+    )
     # model init
     db.init_app(app)
 
@@ -34,7 +42,7 @@ def createApp():
 
 app = createApp()
 
-celery_app = celery_init_app(app)
+celery = celery_init_app(app)
 
 import backend.init_initial_data
 

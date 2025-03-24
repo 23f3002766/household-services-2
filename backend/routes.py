@@ -5,6 +5,7 @@ from datetime import datetime
 import uuid 
 from backend.celery.tasks import add, create_csv
 from celery.result import AsyncResult
+import os 
 
 datastore = app.security.datastore
 cache = app.cache
@@ -18,17 +19,21 @@ def celery():
     task = add.delay(10, 20)
     return {'task_id' : task.id}
 
-
-
 @auth_required('token') 
 @app.get('/get-csv/<id>')
 def getCSV(id):
     result = AsyncResult(id)
 
     if result.ready():
-        return send_file(f'./backend/celery/user-downloads/{result.result}'), 200
+        filename = result.result
+        filepath = os.path.join(app.root_path, "backend/celery/user-downloads", filename)
+
+        if os.path.exists(filepath):
+            return send_file(filepath, as_attachment=True, mimetype='text/csv')
+        else:
+            return {'message': 'File not found'}, 404
     else:
-        return {'message' : 'task not ready'}, 405
+        return {'message': 'Task not ready'}, 202
 
 @auth_required('token') 
 @app.get('/create-csv')
