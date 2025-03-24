@@ -1,23 +1,23 @@
-from flask import current_app as app, jsonify, render_template,  request, send_file
-from flask_security import auth_required, verify_password, hash_password,current_user
+from flask import current_app as app, jsonify, render_template,  request, send_file,render_template_string
+from flask_security import auth_required, verify_password, hash_password
 from backend.models import db , Customer , Professional, User , Service,ServiceRequest
-from datetime import datetime
 import uuid 
 from backend.celery.tasks import add, create_csv
 from celery.result import AsyncResult
 import os 
-from werkzeug.utils import secure_filename
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import base64
+from datetime import datetime
 
 
 datastore = app.security.datastore
 cache = app.cache
 
 @app.route('/')
+@cache.cached(timeout = 5)
 def home():
     return render_template('index.html')
 
@@ -28,6 +28,7 @@ def celery():
 
 @auth_required('token') 
 @app.get('/get-csv/<id>')
+@cache.cached(timeout = 5)
 def getCSV(id):
     result = AsyncResult(id)
 
@@ -51,7 +52,7 @@ def createCSV():
 @app.get('/cache')
 @cache.cached(timeout = 5)
 def cache():
-    return {'time' : str(datetime.now())}
+    return render_template_string("<center><h1>{{time}}</h1></center>",time = datetime.now())
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -281,6 +282,6 @@ def customer_summary(customer_id):
 
 @app.before_request
 def check_authentication():
-    if request.endpoint not in ['home', 'login', 'register', 'static', 'get_services','admin_summary','customer_summary','professional_summary']:
+    if request.endpoint not in ['home', 'login', 'register', 'static', 'get_services','admin_summary','customer_summary','professional_summary','cache']:
         if not request.headers.get('Authentication-Token'):
             return jsonify({'error': 'Unauthorized'}), 401
