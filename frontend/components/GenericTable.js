@@ -20,6 +20,15 @@ export default {
           </tbody>
         </table>
       </div>
-    `
+    `,
+    watch: {
+      data: {
+        deep: true,
+        handler(newData) {
+          this.internalData = [...newData]; // Ensure table updates
+        }
+      }
+    }
+
   };
   

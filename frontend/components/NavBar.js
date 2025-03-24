@@ -10,8 +10,10 @@ export default {
                 <router-link class="nav-link text-secondary me-3 hover-effect" v-if="!$store.state.loggedIn" to="/register">Register</router-link>
                 <router-link class="nav-link text-info me-3 hover-effect" v-if="!$store.state.loggedIn" to="/signup">SignUp</router-link>
 
-                <router-link class="nav-link fw-bold text-primary me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'admin'" to="/admin-dashboard">Admin Dash</router-link>
-                <router-link class="nav-link fw-bold text-success me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'customer'" to="/dashboard">Feed</router-link>
+                <router-link class="nav-link fw-bold text-primary me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'admin'" to="/admin-dashboard">Dashboard</router-link>
+                <router-link class="nav-link fw-bold text-success me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'customer'" to="/dashboard">Dashboard</router-link>
+                <router-link class="nav-link fw-bold text-success me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'customer'" to="/search">Search</router-link>
+                <router-link class="nav-link fw-bold text-success me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'admin'" to="/search">Search</router-link>
                 <router-link class="nav-link fw-bold text-warning me-3 hover-effect" v-if="$store.state.loggedIn && $store.state.role == 'professional'" to="/professional-dashboard">Explore</router-link>
 
                 <button class="nav-link text-danger border-0 bg-transparent" v-if="$store.state.loggedIn" @click="$store.commit('logout')">Logout</button>

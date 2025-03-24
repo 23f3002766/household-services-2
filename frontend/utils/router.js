@@ -10,6 +10,7 @@ import EditServicePage from "../pages/EditServicePage.js";
 import store from './store.js'
 import EditProfile from "../pages/EditProfile.js";
 import BookingsPage from "../pages/BookingsPage.js";
+import SearchProfPage from "../pages/SearchProfPage.js";
 
 
 const Home = {
@@ -68,7 +69,8 @@ const routes = [
               editprofile: { template: '<div></div>' }
             }  
         },
-    ]}
+    ]},
+    {path : '/search', component : SearchProfPage, meta : {requiresLogin : true, roles : ["customer","admin"]}},
 ]
 
 const router = new VueRouter({
