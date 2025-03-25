@@ -1,4 +1,3 @@
-// editprofile.js
 export default {
     props: {
         customer: {

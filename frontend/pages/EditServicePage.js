@@ -1,4 +1,3 @@
-// EditServicePage.js
 export default {
     // The route passes the service id as a prop; the parent passes "services" as a prop too.
     props: {

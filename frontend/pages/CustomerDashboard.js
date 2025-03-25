@@ -186,10 +186,10 @@ export default {
           const service = this.services.find(s => s.id === req.service_id) || {}; // Inject service details
           const prof = this.professionals.find(p => p.id === req.professional_id) || {}; // Inject professional details
           return {
-            id: req.id,  // Ensure ID is included
-            service_name: service.name || "Unknown",  // Ensure valid service name
-            prof_name: prof.name || "Unknown",  // Ensure valid professional name
-            phone: prof.phone || "N/A",  // Ensure valid phone number
+            id: req.id,  
+            service_name: service.name || "Unknown", 
+            prof_name: prof.name || "Unknown",  
+            phone: prof.phone || "N/A",  
             date_of_request: req.date_of_request,  
             service_status: req.service_status ,
           
@@ -207,10 +207,10 @@ export default {
           const service = this.services.find(s => s.id === req.service_id) || {}; // Inject service details
           const prof = this.professionals.find(p => p.id === req.professional_id) || {}; // Inject professional details
           return {
-            id: req.id,  // Ensure ID is included
-            service_name: service.name || "Unknown",  // Ensure valid service name
-            prof_name: prof.name || "Unknown",  // Ensure valid professional name
-            phone: prof.phone || "N/A",  // Ensure valid phone number
+            id: req.id,  
+            service_name: service.name || "Unknown",  
+            prof_name: prof.name || "Unknown",  
+            phone: prof.phone || "N/A",  
             date_of_request: req.date_of_request,  
             service_status: req.service_status ,
             
@@ -228,10 +228,10 @@ export default {
           const service = this.services.find(s => s.id === req.service_id) || {}; // Inject service details
           const prof = this.professionals.find(p => p.id === req.professional_id) || {}; // Inject professional details
           return {
-            id: req.id,  // Ensure ID is included
-            service_name: service.name || "Unknown",  // Ensure valid service name
-            prof_name: prof.name || "Unknown",  // Ensure valid professional name
-            phone: prof.phone || "N/A",  // Ensure valid phone number
+            id: req.id,  
+            service_name: service.name || "Unknown", 
+            prof_name: prof.name || "Unknown",  
+            phone: prof.phone || "N/A",  
             date_of_request: req.date_of_request,  
             service_status: req.service_status ,
             date_of_completion: req.date_of_completion,
@@ -250,8 +250,7 @@ export default {
       })
         .then(response => response.json())
         .then(data => {
-          // Expect your API to return an object with these keys:
-          // services, acceptedRequests, editRequests, closedRequests
+     
           console.log("Service Requests Data:", data["service_reqs"]); 
           this.customer = data["customer"];
           this.services = data["services"];

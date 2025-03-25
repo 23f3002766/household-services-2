@@ -115,10 +115,10 @@ export default {
        
             const service = this.services.find(s => s.id === req.service_id) || {}; // Inject service details
             return {
-              id: req.id,  // Ensure ID is included
-              service_name: service.name || "Unknown",  // Ensure valid service name
-              name: req.name || "Unknown",  // Ensure valid professional name
-              phone: req.phone || "N/A",  // Ensure valid phone number  
+              id: req.id,  
+              service_name: service.name || "Unknown",  
+              name: req.name || "Unknown",  
+              phone: req.phone || "N/A",   
               pincode: req.pincode,
               service_id: req.service_id,
               approved: req.approved,

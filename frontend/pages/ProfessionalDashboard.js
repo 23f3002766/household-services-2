@@ -108,9 +108,9 @@ export default {
           .filter(req => req.service_status === "closed")
           .map(req => {
             return {
-              id: req.id,  // Ensure ID is included
-              service_name: req.service ? req.service.name : "Unknown",  // Ensure valid service name
-              customer_name: req.customer ? req.customer.name : "Unknown",  // Ensure valid professional name
+              id: req.id, 
+              service_name: req.service ? req.service.name : "Unknown",  
+              customer_name: req.customer ? req.customer.name : "Unknown",  
               date_of_completion: req.date_of_completion,  
               service_status: req.service_status ,
             
