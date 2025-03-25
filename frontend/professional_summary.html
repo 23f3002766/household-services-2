@@ -3,16 +3,80 @@
 <head>
     <title>Professional Summary Report</title>
 </head>
-<body>
-    <h1>Professional Summary Report</h1>
-    <p>Total Requests Handled: {{ total_requests }}</p>
-    <p>Assigned Requests: {{ assigned_requests }}</p>
-    <p>Completed Requests: {{ completed_requests }}</p>
+<body style="font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333;">
 
-    <h2>Service Request Status Distribution</h2>
-    <img src="{{ chart_url }}" alt="Service Status Chart" />
-    <footer>
+    <h1 style="color: #007bff; text-align: center;">Professional Daily Summary and Reminder</h1>
+    
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+        <p><strong>Total Requests Handled:</strong> {{ total_requests }}</p>
+        <p><strong>Assigned Requests:</strong> {{ assigned_requests }}</p>
+        <p><strong>Completed Requests:</strong> {{ completed_requests }}</p>
+    </div>
+
+    <h3 style="color: #28a745;">Accepted Requests</h3>
+    <h4 style="color: #dc3545;">Reminder For Upcoming Requests</h4>
+
+    <main style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+        <section>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #007bff; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Request Date</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in reqs %}
+                    {% if req.service_status == 'accepted' %}
+                    <tr style="background: #e9f7ef;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ req.id }}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ req.date_of_request }}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; color: green;">{{ req.service_status }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <h3 style="color: #ff6600;">New Requests</h3>
+    <h4 style="color: #dc3545;">Reminder to Accept or Reject New Requests</h4>
+
+    <main style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <section>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #007bff; color: white;">
+                        <th style="padding: 10px; border: 1px solid #ddd;">ID</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Request Date</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in reqs %}
+                    {% if req.service_status == 'requested' %}
+                    <tr style="background: #fff3cd;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ req.id }}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{{ req.date_of_request }}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; color: orange;">{{ req.service_status }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <h2 style="text-align: center; color: #343a40;">Service Request Status Distribution</h2>
+    <div style="text-align: center;">
+        <img src="{{ chart_url }}" alt="Service Status Chart" style="max-width: 100%; border: 2px solid #007bff; border-radius: 10px; padding: 5px;">
+    </div>
+
+    <footer style="margin-top: 20px; text-align: center; padding: 10px; background: #007bff; color: white; border-radius: 5px;">
         <p>&copy; 2024 A to Z Household Services. All rights reserved.</p>
     </footer>
+
 </body>
 </html>

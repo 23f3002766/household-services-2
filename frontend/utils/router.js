@@ -12,10 +12,8 @@ import EditProfile from "../pages/EditProfile.js";
 import BookingsPage from "../pages/BookingsPage.js";
 import SearchProfPage from "../pages/SearchProfPage.js";
 
+import Home from "../pages/Home.js";
 
-const Home = {
-    template : `<h1> this is home </h1>`
-}
 
 const routes = [
     {path : '/', component : Home},

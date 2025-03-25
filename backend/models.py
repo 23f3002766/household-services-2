@@ -76,6 +76,7 @@ class Professional(User):
     phone = db.Column(db.String(10), nullable=True)
     pincode = db.Column(db.Integer, nullable=True)
     approved = db.Column(db.Boolean, default = False)
+    resume = db.Column(db.String, nullable=True)
      # Relationship for requests a user has accepted
     accepted_requests = db.relationship(
         "ServiceRequest",
@@ -100,6 +101,7 @@ class Professional(User):
             "phone": self.phone,
             "pincode": self.pincode,
             "approved": self.approved,
+            "resume": self.resume
         }
 
 

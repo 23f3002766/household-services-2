@@ -3,16 +3,23 @@
 <head>
     <title>Customer Summary Report</title>
 </head>
-<body>
-    <h1>Customer Summary Report</h1>
-    <p>Total Requests: {{ total_requests }}</p>
-    <p>Pending Requests: {{ pending_requests }}</p>
-    <p>Completed Requests: {{ completed_requests }}</p>
+<body style="font-family: Arial, sans-serif; margin: 20px; background-color: #f8f9fa; color: #333;">
 
-    <h2>Services Requested</h2>
-    <img src="{{ chart_url }}" alt="Service Distribution Chart" />
+    <h1 style="color: #007bff; text-align: center;">Customer Summary Report</h1>
 
-    <footer>
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
+        <h2 style="color: #28a745;">Summary</h2>
+        <p><strong>Total Requests:</strong> {{ total_requests }}</p>
+        <p><strong>Pending Requests:</strong> {{ pending_requests }}</p>
+        <p><strong>Completed Requests:</strong> {{ completed_requests }}</p>
+    </div>
+
+    <h2 style="color: #ff6600; text-align: center;">Services Requested</h2>
+    <div style="text-align: center; padding: 20px;">
+        <img src="{{ chart_url }}" alt="Service Distribution Chart" style="max-width: 100%; border: 2px solid #007bff; border-radius: 10px; padding: 5px;">
+    </div>
+
+    <footer style="margin-top: 20px; text-align: center; padding: 10px; background: #007bff; color: white; border-radius: 5px;">
         <p>&copy; 2024 A to Z Household Services. All rights reserved.</p>
     </footer>
 

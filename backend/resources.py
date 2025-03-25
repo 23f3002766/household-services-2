@@ -1,8 +1,14 @@
-from flask import jsonify, request, redirect, url_for, current_app as app
+from flask import jsonify, request, url_for, current_app as app , send_from_directory,abort
 from flask_restful import Api, Resource, fields, marshal_with,reqparse
 from flask_security import auth_required,roles_required,current_user
 from backend.models import db, User, Customer, Professional, Service, ServiceRequest
 from datetime import datetime
+
+
+#file utils
+UPLOAD_FOLDER = "uploads"  # Change this to your actual upload directory
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 
 # Initialize the API
 api = Api(prefix='/api')
@@ -16,6 +22,18 @@ service_fields = {
     'description': fields.String,
 }
 
+# --- Util Path For SP PDF ---
+@app.route('/uploads/<path:filename>', methods=['GET'])
+def uploaded_file(filename):
+    uploads_dir = app.config["UPLOAD_FOLDER"]
+
+    # Debugging: Print the requested file
+    print(f"Requested file: {filename}")
+
+    try:
+        return send_from_directory(uploads_dir, filename)
+    except FileNotFoundError:
+        abort(404)
 # -----------------------------------------------------------------------------
 # Admin Dashboard Resource
 # -----------------------------------------------------------------------------
@@ -31,7 +49,16 @@ class AdminDashboard(Resource):
         
         #  to_dict() method in models.
         customers_data = [c.to_dict() for c in customers]
-        professionals_data = [p.to_dict() for p in professionals]
+        professionals_data = []
+
+        for p in professionals:
+            prof_dict = p.to_dict()
+            if prof_dict.get("resume"):  
+                print(prof_dict.get("resume"))
+                prof_dict["resume"] = url_for("uploaded_file", filename=prof_dict["resume"], _external=True)
+            print(f"Generated Resume URL: {prof_dict["resume"]}")
+            professionals_data.append(prof_dict)
+
         services_data = [c.to_dict() for c in services]
         service_reqs_data = [c.to_dict() for c in service_reqs]
         
@@ -164,7 +191,7 @@ class CustomerDashboard(Resource):
     def get(self , customer_id):
         professionals = Professional.query.all()
         services = Service.query.all()
-        service_reqs = ServiceRequest.query.all()
+        service_reqs = ServiceRequest.query.filter_by(customer_id=current_user.id).all()
         
         # Assume each model implements a to_dict() method.
         customer_data = Customer.query.get(customer_id)

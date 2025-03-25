@@ -3,7 +3,7 @@ import BookingsPage from "./BookingsPage.js";
 
 export default {
   template: `
-  <div>
+  <div class="container mt-4 p-4 rounded shadow-sm" style="background: #f8f9fa; border-radius: 10px;">
       <!-- Header -->
       <div class="center mb-4">
         <h1>Search</h1> 
@@ -66,7 +66,8 @@ export default {
                 <input type="text" name="remark" id="remark" 
                   :value="row.remarks" 
                   @input="row.remarks = $event.target.value" 
-                  style="background-color:greenyellow; color: rgb(6,7,7); border-radius:1em; border: none; padding: 1rem;">
+                  class="rounded p-2" 
+                  style="background-color:rgb(136, 228, 87); color: rgb(6,7,7);border: none;">
                 <button
                  @click="updateReview(row.id, row.remarks)"
                  class="btn btn-danger" 

@@ -4,84 +4,86 @@ import EditServicePage from "./EditServicePage.js";
 
 export default {
     template: `
-    <div class="container mt-4">
-      <h1>Admin Dashboard</h1>
-      <!-- Trigger create Service Req CSV -->
-      <button class="btn btn-danger btn-sm" @click="create_csv"> Export Service Requests Data </button>
-      
-      <div v-if="isChildRouteActive">
-        <!-- This container shows the child component if one is active -->
-        <div v-if="childActive" class="container mt-3 bg-light p-3 rounded shadow-sm">
-     
-          <router-view name="create" :services="services" @service-created="addService"></router-view>
-
-          <router-view name="edit" :services="services" @service-updated="updateService"></router-view>
-      
-        </div>
-      </div>
-      
-      <!-- Otherwise, show the dashboard content -->
-      <div v-else>
-        <div class="container mt-3 mb-2 bg-light p-3 rounded shadow-sm">
-          <router-link class="navbar-brand fw-bold" to="/admin-dashboard/create-service">
-            Create New Service
-          </router-link>
-        </div>
-      
-        <!-- Services Section -->
-       <h3>Current Services</h3>
-        <GenericTable :columns="serviceColumns" :data="services">
-        
-          <template v-slot:action="{ row }">
-            <router-link 
-            class="btn btn-primary btn-sm"
-            :to="'/admin-dashboard/editservice/' + row.id">
-              Edit
-            </router-link>
-            <button class="btn btn-danger btn-sm" @click="deleteService(row.id)">Delete</button>
-          </template>
-        </GenericTable>
-        
-        <!-- Professionals Section -->
-        <h3>Professionals</h3>
-        <GenericTable :columns="professionalColumns" :data="professionals">
-          
-          <template v-slot:action="{ row }">      
-            <div v-if="!row.approved" >
-              <button class="btn btn-primary btn-sm me-1" @click="approveProfessional(row.id)">&#10003;</button>
-              <button class="btn btn-danger btn-sm" @click="blockUser(row.id)">&#10005;</button>
-            </div>
-            <div v-else-if="row.active" >
-              <button class="btn btn-secondary btn-sm" @click="blockUser(row.id)">Block</button>
-            </div>
-            <div v-else >
-              <button class="btn btn-secondary btn-sm">Blocked</button>
-            </div>
-          </template>
-        </GenericTable>
-        
-        <!-- Customers Section -->
-        <h3>Customers</h3>
-        <GenericTable :columns="customerColumns" :data="customers">
-          <template v-slot:action="{ row }">
-            <div v-if="row.active" >
-              <button class="btn btn-secondary btn-sm" @click="blockUser(row.id)">Block</button>
-            </div>
-            <div v-else >
-              <button class="btn btn-secondary btn-sm">Blocked</button>
-            </div>
-          </template>
-        </GenericTable>
-        
-        <!-- Service Requests Section -->
-        <h3>Service Requests</h3>
-        <GenericTable :columns="requestColumns" :data="serviceRequests"> 
-         <template v-slot:action="{ row }">
-            <button class="btn btn-danger btn-sm" >Delete</button>
-          </template>
-        </GenericTable>
-      </div>
+  <div class="container mt-4 p-4 rounded shadow-sm" style="background: #f8f9fa; border-radius: 10px;">
+  <h1 >Admin Dashboard</h1>
+  
+  <!-- Trigger create Service Req CSV -->
+  <button class="btn btn-danger btn-sm mb-3" @click="create_csv"> Export Service Requests Data </button>
+  
+  <div v-if="isChildRouteActive">
+    <div v-if="childActive" class="container mt-3 p-3 rounded shadow-sm" style="background: white; border-radius: 10px;">
+      <router-view name="create" :services="services" @service-created="addService"></router-view>
+      <router-view name="edit" :services="services" @service-updated="updateService"></router-view>
     </div>
+  </div>
+  
+  <div v-else>
+    <div class="container mt-3 mb-2 p-3 rounded shadow-sm" style="background: white; border-radius: 10px;">
+      <router-link class="btn btn-dark w-100" to="/admin-dashboard/create-service">
+        Create New Service
+      </router-link>
+    </div>
+    
+    <!-- Services Section -->
+    <h3 >Current Services</h3>
+    <GenericTable :columns="serviceColumns" :data="services" class="rounded border shadow-sm">
+      <template v-slot:action="{ row }">
+        <router-link class="btn btn-primary btn-sm" :to="'/admin-dashboard/editservice/' + row.id">
+          Edit
+        </router-link>
+        <button class="btn btn-danger btn-sm" @click="deleteService(row.id)">Delete</button>
+      </template>
+    </GenericTable>
+    
+    <!-- Professionals Section -->
+    <h3 >Professionals</h3>
+    <GenericTable :columns="professionalColumns" :data="professionals" class="rounded border shadow-sm">
+      
+      <!-- File View Section -->
+    <template v-slot:resume="{ row }">
+      <a v-if="row.resume" :href="row.resume" target="_blank" class="btn btn-primary btn-sm">
+          View Resume
+      </a>
+      <span v-else>Not Available</span>
+    </template>
+    <template v-slot:action="{ row }">
+      
+        <div v-if="!row.approved">
+          <button class="btn btn-primary btn-sm me-1" @click="approveProfessional(row.id)">&#10003;</button>
+          <button class="btn btn-danger btn-sm" @click="blockUser(row.id)">&#10005;</button>
+        </div>
+        <div v-else-if="row.active">
+          <button class="btn btn-secondary btn-sm" @click="blockUser(row.id)">Block</button>
+        </div>
+        <div v-else>
+          <button class="btn btn-secondary btn-sm">Blocked</button>
+        </div>
+      </template>
+    </GenericTable>
+    
+    <!-- Customers Section -->
+    <h3 >Customers</h3>
+    <GenericTable :columns="customerColumns" :data="customers" class="rounded border shadow-sm">
+      <template v-slot:action="{ row }">
+        <div v-if="row.active">
+          <button class="btn btn-secondary btn-sm" @click="blockUser(row.id)">Block</button>
+        </div>
+        <div v-else>
+          <button class="btn btn-secondary btn-sm">Blocked</button>
+        </div>
+      </template>
+    </GenericTable>
+    
+    <!-- Service Requests Section -->
+    <h3>Service Requests</h3>
+    <GenericTable :columns="requestColumns" :data="serviceRequests" class="rounded border shadow-sm">
+      <template v-slot:action="{ row }">
+        <button class="btn btn-danger btn-sm">Delete</button>
+      </template>
+    </GenericTable>
+  </div>
+</div>
+
 
 
     `,
@@ -103,6 +105,7 @@ export default {
           { label: "Name", key: "name" },
           { label: "Service ID", key: "service_id" },
           { label: "Pincode", key: "pincode" },
+          { label: "Resume", key: "resume"},
           { label: "Action", key: "action" }
         ],
         customerColumns: [
@@ -200,10 +203,6 @@ export default {
           })
           .catch(error => console.error("Error deleting service :", error));
       },
-      viewPDFUrl: function(professionalId) {
-       //Do it later
-        return window.apiHelper.viewPDFUrl(professionalId);
-      },
       //Services methods
       addService(newService) {
         this.services.push(newService);
@@ -237,7 +236,7 @@ export default {
                 alert('Data successfully exported');
                 
                 clearInterval(interval);
-            } else if (res.status === 404) {
+            } else if (res.status === 404 || 500) {
                 console.error('File not found');  // Handle error
                 clearInterval(interval);
             }

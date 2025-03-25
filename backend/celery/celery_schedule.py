@@ -11,15 +11,21 @@ def setup_periodic_tasks(sender, **kwargs):
     #customer and professional need their id
 
     #tests
-    #sender.add_periodic_task(10.0, email_customer_report.s('student@gmail.com', 'report', '3') )
-    #sender.add_periodic_task(20.0, email_admin_report.s('student@gmail.com', 'report') )
-    #sender.add_periodic_task(30.0, email_professional_report.s('student@gmail.com', 'report', '4') )
-    sender.add_periodic_task(crontab(minute="*/1"), email_reminder.s('student@gmail.com', 'reminder to login', '<h1> hello everyone </h1>'), name='quick reminder')
+    #sender.add_periodic_task(10.0, email_customer_report.s('xxxx@gmail.com', 'report', '5') )
+    #sender.add_periodic_task(20.0, email_admin_report.s('xxxx@gmail.com', 'report') )
+    #sender.add_periodic_task(30.0, email_professional_report.s('xxxx@gmail.com', 'report', '4') )
+    #sender.add_periodic_task(crontab(minute="*/1"), 
+                             #email_reminder.s('xxxx@gmail.com', 'reminder to login', '<h1> hello everyone </h1>'),
+                             # name='quick reminder')
 
     # daily message at 6:55 pm, everyday
-    sender.add_periodic_task(crontab(hour=18, minute=55), email_professional_report.s('student@gmail.com', 'report', '4') ,name='weekly reminder')
+    sender.add_periodic_task(crontab(hour=18, minute=55),
+                              email_professional_report.s('student@gmail.com', 'report', '4') ,
+                              name='daily reminder')
 
-    # weekly messages
-    sender.add_periodic_task(crontab(hour=18, minute=55, day_of_week='monday'), email_customer_report.s('student@gmail.com', 'report', '3') ,name='monthlyy reminder')
+    # monthly messages
+    sender.add_periodic_task(crontab(hour=8, minute=0, day_of_month=1), 
+                             email_customer_report.s('student@gmail.com', 'report', '3') ,
+                             name='monthly report')
 
 

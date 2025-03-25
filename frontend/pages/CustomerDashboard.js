@@ -16,7 +16,7 @@ export default {
       <!-- Edit Profile Link -->
       <div class="my-container mb-4">
         <router-link 
-          class="btn btn-secondary" 
+          class="btn btn-dark w-100" 
           :to="'/dashboard/editprofile/' + customer.id">
           Edit Profile Details
         </router-link>
@@ -29,11 +29,11 @@ export default {
       
       <!-- Service Cards Section -->
       <div class="my-container mb-4">
-        <div class="card-container d-flex flex-wrap justify-content-start">
+        <div class="card-container d-flex flex-wrap gap-3">
           <div v-if="services.length" 
                v-for="service in services" 
                :key="service.id" 
-               class="card m-2 p-3" 
+               class="card p-3 border rounded shadow-sm" 
                style="width: 18rem;">
             <h3>{{ service.name }}</h3>
             <p>{{ service.description }}</p>
@@ -112,7 +112,8 @@ export default {
                 <input type="text" name="remark" id="remark" 
                   :value="row.remarks" 
                   @input="row.remarks = $event.target.value" 
-                  style="background-color:greenyellow; color: rgb(6,7,7); border-radius:1em; border: none; padding: 1rem;">
+                  class="rounded p-2" 
+                  style="background-color:rgb(136, 228, 87); color: rgb(6,7,7);border: none;">
                 <button
                  @click="updateReview(row.id, row.remarks)"
                  class="btn btn-danger" 
@@ -165,8 +166,8 @@ export default {
     BookingsPage
   },
   computed: {
-    // Check if the current route is a child route of /admin-dashboard.
-    // If the path is exactly '/admin-dashboard', then no child is active.
+    // Check if the current route is a child route of /dashboard.
+    // If the path is exactly '/dashboard', then no child is active.
      isChildRouteActive() {
       return this.$route.path !== '/dashboard';
       },
