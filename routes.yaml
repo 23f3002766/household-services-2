@@ -1,0 +1,320 @@
+openapi: 3.0.0
+info:
+  title: Flask API
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Home Page
+      responses:
+        "200":
+          description: Renders the index page.
+
+  /celery:
+    get:
+      summary: Trigger Celery Task
+      responses:
+        "200":
+          description: Returns the task ID.
+
+  /get-csv/{id}:
+    get:
+      summary: Get CSV File
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Returns the CSV file.
+        "404":
+          description: File not found.
+        "202":
+          description: Task not ready.
+
+  /create-csv:
+    get:
+      summary: Create CSV File
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Returns the task ID.
+
+  /register:
+    post:
+      summary: Register a Customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+                role:
+                  type: string
+                address:
+                  type: string
+                phone:
+                  type: string
+                pincode:
+                  type: integer
+      responses:
+        "201":
+          description: User registered successfully.
+        "400":
+          description: Invalid inputs.
+
+  /register-prof:
+    post:
+      summary: Register a Professional
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+                role:
+                  type: string
+                address:
+                  type: string
+                phone:
+                  type: string
+                pincode:
+                  type: integer
+                service_id:
+                  type: integer
+                experience:
+                  type: integer
+                resume:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Professional registered successfully.
+        "400":
+          description: Invalid inputs.
+
+  /login:
+    post:
+      summary: Login User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: User logged in successfully.
+        "400":
+          description: Invalid password.
+        "404":
+          description: Invalid email.
+
+  /protected:
+    get:
+      summary: Protected Route
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Authorized.
+
+  /services:
+    get:
+      summary: Get Services
+      responses:
+        "200":
+          description: Returns list of available services.
+
+  /admin/summary:
+    get:
+      summary: Admin Dashboard Summary
+      responses:
+        "200":
+          description: Returns admin summary data.
+
+  /professional/summary/{professional_id}:
+    get:
+      summary: Professional Summary
+      parameters:
+        - name: professional_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Returns summary data for a professional.
+
+  /customer/summary/{customer_id}:
+    get:
+      summary: Customer Summary
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Returns summary data for a customer.
+
+  /api/admin-dashboard:
+    get:
+      summary: Get Admin Dashboard Data
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Returns admin dashboard data.
+
+  /api/admin/create-service:
+    post:
+      summary: Create a New Service
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                service_name:
+                  type: string
+                price:
+                  type: number
+                time_required:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "201":
+          description: Service created successfully.
+        "400":
+          description: Invalid inputs.
+
+  /api/admin/update-service/{service_id}:
+    put:
+      summary: Update Service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                service_name:
+                  type: string
+                price:
+                  type: number
+                time_required:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "200":
+          description: Service updated successfully.
+        "404":
+          description: Service not found.
+
+  /api/admin/delete-service/{service_id}:
+    delete:
+      summary: Delete Service
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: service_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Service deleted successfully.
+        "404":
+          description: Service not found.
+
+  /api/admin/approve-professional/{professional_id}:
+    post:
+      summary: Approve Professional
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: professional_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Professional approved.
+
+  /api/admin/block-user/{user_id}:
+    post:
+      summary: Block User
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User blocked.
+
+  /api/customer-dashboard/{customer_id}:
+    get:
+      summary: Get Customer Dashboard Data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Returns customer dashboard data.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

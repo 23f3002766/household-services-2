@@ -3,6 +3,7 @@ import time
 import flask_excel
 from backend.models import ServiceRequest
 from backend.celery.mail_service import send_email
+from backend.models import db, Professional, ServiceRequest
 
 import urllib.request
 
@@ -51,3 +52,26 @@ def email_admin_report(to, subject):
     with urllib.request.urlopen(url) as response:
         content = response.read().decode()
     send_email(to, subject, content)
+
+from celery.schedules import crontab
+from flask import current_app as app
+from backend.celery.tasks import email_reminder
+from backend.models import db, Professional, ServiceRequest
+
+
+
+@shared_task(ignore_result = True)
+def send_pending_request_reminders():
+        accepted_requests = (
+            db.session.query(ServiceRequest.id, Professional.name, Professional.email)
+                .join(Professional, ServiceRequest.professional_id == Professional.id)
+                .filter(ServiceRequest.service_status == 'accepted')
+                .all()
+        )
+        for request_id , name, email in accepted_requests:
+
+            print(f"Sending reminder for Request ID: {request_id}, Professional: {name}, Email: {email}")
+
+            email_reminder.delay(email, 'You have Pending Requests', 
+                                 f'<h1>You have pending task: {request_id} ,{name}</h1>')
+

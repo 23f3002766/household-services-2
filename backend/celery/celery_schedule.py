@@ -1,6 +1,6 @@
 from celery.schedules import crontab
 from flask import current_app as app
-from backend.celery.tasks import email_reminder,email_customer_report,email_admin_report,email_professional_report
+from backend.celery.tasks import email_reminder,email_customer_report,email_admin_report,email_professional_report,send_pending_request_reminders
 
 
 celery_app = app.extensions['celery']
@@ -9,6 +9,7 @@ celery_app = app.extensions['celery']
 def setup_periodic_tasks(sender, **kwargs):
     
     #customer and professional need their id
+    sender.add_periodic_task(20.0, send_pending_request_reminders.s(), name='fetch and notify')
 
     #tests
     #sender.add_periodic_task(10.0, email_customer_report.s('xxxx@gmail.com', 'report', '5') )
