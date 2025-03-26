@@ -198,6 +198,7 @@ export default {
           .then(response => {
             if(response.ok){
               this.services = this.services.filter(service => service.id !== serviceId);
+              this.fetchInitData();
               console.log("Service Deleted Successfully")
             }
           })
