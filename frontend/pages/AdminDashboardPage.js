@@ -212,7 +212,9 @@ export default {
           updatedService.id = sid         
           sid = parseInt(sid) - 1
           console.log(sid)
+          
           this.$set(this.services,sid, updatedService);
+          this.fetchInitData();
       },
       //Async job method
       async create_csv(){
