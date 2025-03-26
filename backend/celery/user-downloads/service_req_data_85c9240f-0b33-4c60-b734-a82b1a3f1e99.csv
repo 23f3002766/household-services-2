@@ -1,0 +1,7 @@
+id,service_id,customer_id,professional_id,date_of_request,date_of_completion,service_status,remarks
+1,1,5,3,2025-03-28T17:53:00,,requested,
+5,1,5,2,2025-03-20T08:32:00,,requested,
+9,1,7,3,2025-03-29T07:37:00,,requested,
+10,1,7,2,2025-03-27T07:37:00,,requested,
+11,1,5,8,2025-03-28T07:48:00,2025-03-26T18:49:24.601583,closed,bad
+12,2,5,9,2025-03-28T18:59:00,2025-03-26T19:01:15.004514,closed,good
