@@ -5,8 +5,8 @@ from email.mime.text import MIMEText
 MAIL_SERVER='smtp.gmail.com'
 MAIL_PORT=587
 MAIL_USE_TLS=True
-MAIL_USERNAME='thanos112357@gmail.com'
-MAIL_PASSWORD='kgpp kjze mmsi pmwk'
+MAIL_USERNAME='add yours'
+MAIL_PASSWORD='add yours'
 MAIL_DEFAULT_SENDER='xxx@ds.study.iitm.ac.in'
 
 def send_email(to, subject, content):
